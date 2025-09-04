@@ -112,7 +112,7 @@
             </div>
         </form>
 
-        {% if preview_data is defined %}
+        {% if preview_data is defined and preview_data %}
             <h3>Preview Data</h3>
             <div style="overflow-x:auto;">
                 <table class="preview-table">
@@ -136,17 +136,7 @@
             </div>
         {% endif %}
 
-        {% if excel_file and pdf_file %}
-        <div class="downloads">
-            <h3>Download Your Files</h3>
-            <a href="{{ url_for('download_file', filename=excel_file) }}" target="_blank">
-                <button class="download-btn">Excel File</button>
-            </a>
-            <a href="{{ url_for('download_file', filename=pdf_file) }}" target="_blank">
-                <button class="download-btn">PDF File</button>
-            </a>
-        </div>
-        {% endif %}
+        
     </div>
 
     <script>
