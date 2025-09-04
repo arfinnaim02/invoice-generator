@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibes Invoice Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: #fff;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 700px;
+            width: 95%;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        label.upload-btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #FF6B6B, #FFD93D);
+            color: #fff;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        label.upload-btn:hover {
+            transform: scale(1.05);
+        }
+        .file-name {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #555;
+        }
+        button.download-btn {
+            margin: 10px 5px;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #6A82FB, #FC5C7D);
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        button.download-btn:hover {
+            transform: scale(1.05);
+        }
+        .downloads {
+            margin-top: 25px;
+        }
+        .preview-table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            display: block;
+        }
+        .preview-table th, .preview-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .preview-table th {
+            background-color: #f4f4f4;
+        }
+        .error {
+            color: #FF4C4C;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        @media (max-width: 500px) {
+            .container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Vibes Invoice Generator</h1>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data">
+            <label class="upload-btn" for="file">Choose CSV File</label>
+            <input type="file" name="file" id="file" onchange="showFileName()">
+            <div class="file-name" id="file-name">No file selected</div>
+            <div style="margin-top:20px;">
+                <button type="submit" class="download-btn">Generate Invoice</button>
+            </div>
+        </form>
+
+        {% if preview_data is defined %}
+            <h3>Preview Data</h3>
+            <div style="overflow-x:auto;">
+                <table class="preview-table">
+                    <thead>
+                        <tr>
+                            {% for col in preview_data.columns %}
+                                <th>{{ col }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in preview_data.values %}
+                            <tr>
+                                {% for cell in row %}
+                                    <td>{{ cell }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+        {% if excel_file and pdf_file %}
+        <div class="downloads">
+            <h3>Download Your Files</h3>
+            <a href="{{ url_for('download_file', filename=excel_file) }}" target="_blank">
+                <button class="download-btn">Excel File</button>
+            </a>
+            <a href="{{ url_for('download_file', filename=pdf_file) }}" target="_blank">
+                <button class="download-btn">PDF File</button>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function showFileName() {
+            const input = document.getElementById('file');
+            const fileNameDiv = document.getElementById('file-name');
+            if(input.files.length > 0) {
+                fileNameDiv.textContent = "Selected File: " + input.files[0].name;
+            } else {
+                fileNameDiv.textContent = "No file selected";
+            }
+        }
+    </script>
+</body>
+</html>
