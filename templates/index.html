@@ -4,151 +4,145 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vibes Invoice Generator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f6fa;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        }
+        header {
+            background-color: #2d3436;
+            color: #ffffff;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
         }
         .container {
-            background: #fff;
-            padding: 40px 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            max-width: 700px;
-            width: 95%;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .upload-section {
             text-align: center;
+            margin-bottom: 25px;
         }
-        h1 {
-            color: #333;
-            margin-bottom: 30px;
-        }
-        input[type="file"] {
-            display: none;
-        }
-        label.upload-btn {
-            display: inline-block;
-            padding: 12px 25px;
-            background: linear-gradient(135deg, #FF6B6B, #FFD93D);
-            color: #fff;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-        label.upload-btn:hover {
-            transform: scale(1.05);
-        }
-        .file-name {
-            margin-top: 15px;
-            font-size: 14px;
-            color: #555;
-        }
-        button.download-btn {
-            margin: 10px 5px;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 50px;
-            background: linear-gradient(135deg, #6A82FB, #FC5C7D);
-            color: #fff;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-        button.download-btn:hover {
-            transform: scale(1.05);
-        }
-        .downloads {
-            margin-top: 25px;
-        }
-        .preview-table {
-            margin: 20px auto;
-            border-collapse: collapse;
-            width: 100%;
-            max-height: 300px;
-            overflow-y: auto;
-            display: block;
-        }
-        .preview-table th, .preview-table td {
-            border: 1px solid #ddd;
+        .upload-section input[type="file"] {
             padding: 8px;
-            text-align: center;
+            font-size: 1rem;
         }
-        .preview-table th {
-            background-color: #f4f4f4;
+        .upload-section button {
+            background-color: #0984e3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-left: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .upload-section button:hover {
+            background-color: #74b9ff;
         }
         .error {
-            color: #FF4C4C;
-            margin-top: 15px;
-            font-weight: bold;
+            color: red;
+            text-align: center;
+            margin-bottom: 15px;
         }
-        @media (max-width: 500px) {
-            .container {
-                padding: 30px 20px;
-            }
+        .preview-section {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table th, table td {
+            border: 1px solid #dfe6e9;
+            padding: 10px;
+            text-align: center;
+        }
+        table th {
+            background-color: #ffeaa7;
+            font-weight: 700;
+        }
+        .download-buttons {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .download-buttons a {
+            text-decoration: none;
+            background-color: #00b894;
+            color: white;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 8px;
+            font-weight: 600;
+            display: inline-block;
+            transition: 0.3s;
+        }
+        .download-buttons a:hover {
+            background-color: #55efc4;
+        }
+        footer {
+            text-align: center;
+            padding: 15px 0;
+            color: #636e72;
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
+    <header>Vibes Invoice Generator</header>
     <div class="container">
-        <h1>Vibes Invoice Generator</h1>
-
         {% if error %}
-            <div class="error">{{ error }}</div>
+        <div class="error">{{ error }}</div>
         {% endif %}
 
-        <form method="POST" enctype="multipart/form-data">
-            <label class="upload-btn" for="file">Choose CSV File</label>
-            <input type="file" name="file" id="file" onchange="showFileName()">
-            <div class="file-name" id="file-name">No file selected</div>
-            <div style="margin-top:20px;">
-                <button type="submit" class="download-btn">Generate Invoice</button>
-            </div>
+        <form method="POST" enctype="multipart/form-data" class="upload-section">
+            <input type="file" name="file" accept=".csv, .xlsx">
+            <button type="submit">Generate Invoice</button>
         </form>
 
-        {% if preview_data is defined and preview_data %}
-            <h3>Preview Data</h3>
-            <div style="overflow-x:auto;">
-                <table class="preview-table">
-                    <thead>
-                        <tr>
-                            {% for col in preview_data.columns %}
-                                <th>{{ col }}</th>
-                            {% endfor %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for row in preview_data.values %}
-                            <tr>
-                                {% for cell in row %}
-                                    <td>{{ cell }}</td>
-                                {% endfor %}
-                            </tr>
+        {% if preview_data %}
+        <div class="download-buttons">
+            {% if excel_file %}
+            <a href="{{ url_for('download_file', filename=excel_file) }}">Download Excel</a>
+            {% endif %}
+            {% if pdf_file %}
+            <a href="{{ url_for('download_file', filename=pdf_file) }}">Download PDF</a>
+            {% endif %}
+        </div>
+
+        <h3>Preview</h3>
+        <div class="preview-section">
+            <table>
+                <thead>
+                    <tr>
+                        {% for col in preview_data.columns %}
+                        <th>{{ col }}</th>
                         {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in preview_data.itertuples() %}
+                    <tr>
+                        {% for value in row[1:] %}
+                        <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         {% endif %}
-
-        
     </div>
-
-    <script>
-        function showFileName() {
-            const input = document.getElementById('file');
-            const fileNameDiv = document.getElementById('file-name');
-            if(input.files.length > 0) {
-                fileNameDiv.textContent = "Selected File: " + input.files[0].name;
-            } else {
-                fileNameDiv.textContent = "No file selected";
-            }
-        }
-    </script>
+    <footer>© {{ datetime.utcnow().year }} Vibes Invoice Generator</footer>
 </body>
 </html>
